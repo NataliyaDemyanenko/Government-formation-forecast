@@ -1,4 +1,4 @@
-Government Formation Forecast App
+Government Formation Forecast App//
 Overview
 The Government Formation Forecast App is a tool designed to predict government coalition structure and power distribution within a government coalition based on the results of parliamentary elections or public opinion polls. 
 It utilizes a cooperative game theory approach to provide empirically accurate forecasts of two aspects of the government formation process: which political parties will form a government coalition and the distribution of power within that coalition.
