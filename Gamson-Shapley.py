@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# Import necessary libraries
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import Tk
@@ -12,6 +12,7 @@ import networkx as nx
 import pandas as pd
 from itertools import permutations, combinations
 
+# Function to calculate binomial coefficient
 def binomial(x, y):
     try:
         binom = math.factorial(x) // math.factorial(y) // math.factorial(x - y)
@@ -19,12 +20,14 @@ def binomial(x, y):
         binom = 0
     return binom
 
+# Function to generate all subsets (powerset) of a set
 def powerset(s):
     x = len(s)
     masks = [1 << i for i in range(x)]
     for i in range(1 << x):
         yield [ss for mask, ss in zip(masks, s) if i & mask]
 
+# Class to represent a cooperative game
 class CooperativeGame():
     def __init__(self, characteristic_function):
         if type(characteristic_function) is not dict:
@@ -45,6 +48,7 @@ class CooperativeGame():
         self.player_list = max(characteristic_function.keys(), key=lambda key: len(key))
         self.number_players = len(self.player_list)
 
+    # Method to calculate Shapley value
     def shapley_value(self):
         payoff_vector = {}
         n = int(len(self.player_list))
@@ -60,10 +64,12 @@ class CooperativeGame():
 
         return payoff_vector
 
+    # Method to check if the game is monotone
     def is_monotone(self):
         return not any([set(p1) <= set(p2) and self.ch_f[p1] > self.ch_f[p2]
                         for p1, p2 in permutations(self.ch_f.keys(), 2)])
 
+    # Method to check if the game is superadditive
     def is_superadditive(self):
         sets = self.ch_f.keys()
         for p1, p2 in combinations(sets, 2):
@@ -72,10 +78,12 @@ class CooperativeGame():
                 if self.ch_f[union] < self.ch_f[p1] + self.ch_f[p2]:
                     return False
         return True
-
+ 
+    # Method to represent the game as a string
     def __repr__(self):
         return "A {} player co-operative game".format(self.number_players)
 
+    # Method to represent the game in LaTeX format
     def __latex__(self):
         cf = self.ch_f
         output = "v(c) = \\begin{cases}\n"
@@ -88,10 +96,12 @@ class CooperativeGame():
         output += "\\end{cases}"
         return output
 
+    # Method to check if the game is efficient    
     def is_efficient(self, payoff_vector):
         pl = tuple(sorted(list(self.player_list)))
         return sum(payoff_vector.values()) == self.ch_f[pl]
 
+    # Method to check if there is any null player
     def nullplayer(self, payoff_vector):
         for player in self.player_list:
             results = []
@@ -103,6 +113,7 @@ class CooperativeGame():
                 return False
         return True
 
+    # Method to check if the game is symmetric
     def is_symmetric(self, payoff_vector):
         sets = self.ch_f.keys()
         element = [i for i in sets if len(i) == 1]
@@ -116,6 +127,7 @@ class CooperativeGame():
                 return False
         return True
 
+# Placeholder function for the main application logic
 def goldenapp():
     pass
     def powerset(s):
@@ -124,7 +136,7 @@ def goldenapp():
      for i in range(1 << x):
          yield [ss for mask, ss in zip(masks, s) if i & mask]
 
-
+# Function for the main application logic
 def goldenapp():
      entries={}
      party_names={}
@@ -143,7 +155,6 @@ def goldenapp():
 
 
      # Initialize parties and coalitions (labelled by letters)
-
      labels=['']*party_num
      colors=['']*party_num
      partyposition=['']*party_num
@@ -164,7 +175,6 @@ def goldenapp():
 
 
      # Introduce campaign commitments
-
      fr={}
      friends={}
      for k in range(0,party_num):
@@ -175,14 +185,12 @@ def goldenapp():
          #print(friends[parties[k]])
 
      # Computing seats, Shapley values and all winning coalitions
-
      P=0
      for i in range(len(polls)):
          P += polls[i]
 
 
      # Initialize proportions of seats (precise and rounded)    
-
      s ={}
      sround = {}    
      pl = {} 
@@ -193,7 +201,8 @@ def goldenapp():
          sround[p]= round(float(s[p]*100),1)
          i+=1
 
-     worth = {}                                           # Assign worth to coalitions
+    # Assign worth to coalitions
+     worth = {}      
      mworth = {}
      for i in tuple(coalitions):
          #print(i)
@@ -226,15 +235,15 @@ def goldenapp():
          #v = max(sh[k],0)
          print( "{:<10} {:<10} {:<10} {:<10} {:<10}".format(k, lb, round(float(pl[k]),2), num, v) )    
 
+    # Find all winning coalitions. N: this includes incompatible coalitions also
      letter_function = {}
-     for k in worth.keys():            # Find all winning coalitions. N: this includes incompatible coalitions also
+     for k in worth.keys():            
          if worth[k] != 0:
              letter_function[k]=worth[k]
      #print('Letter function', letter_function)
 
 
      # Find all minimal winning coalitions
-
      non_minimal_winning={}
      for k in letter_function.keys():
          for j in letter_function.keys():
@@ -336,11 +345,13 @@ def goldenapp():
      #print(chi)
 
 # GUI part
+# Initialize dictionaries for entries, entry widgets, and entry variables
 entries={}
 entry={}
 entry_var={}
 errmsg = 'Error!'
 
+# Function to load data from a file
 def load_file():
      FILENAME=askopenfilename()
      try:
@@ -355,6 +366,7 @@ def load_file():
              except:
                  entries[k,j]=''
 
+# Function to save data to a file
 def save_file():
      FILENAME = asksaveasfilename()
 
@@ -366,6 +378,7 @@ def save_file():
 
      pickle.dump(entries, open('save.p', "wb"))
 
+# Function to populate the GUI with loaded dat
 def populate():
      load_file()
      for j in range(0,5):
@@ -381,12 +394,12 @@ def populate():
 
 
 
-# set the WM_CLASS
+# Initialize the main Tkinter window with a specific WM_CLASS and titleS
 root = Tk(className="Goldenapp")
 # set the window title
 root.wm_title("GoldenApp Political Analytics Tool")
 
-
+# Create labels for the GUI
 tk.Label(root, text="Country").grid(row=0)
 tk.Label(root, text="Poll").grid(row=1)
 tk.Label(root, text="Party Name").grid(row=2, column=1)
@@ -423,13 +436,11 @@ tk.Label(root, text="Z").grid(row=28)
 
 populate()
 
+# Create buttons for Load, Save, Run, and Quit functionalities
 entry[28] = tk.Button(root, text='Load', command= lambda:populate()).grid(row=30,column=0)
 entry[29] = tk.Button(root, text='Save', command= lambda:save_file()).grid(row=30,column=1)
 entry[30] = tk.Button(root, text='Run', command= lambda:goldenapp()).grid(row=30,column=2)
 entry[31] = tk.Button(root, text='Quit', command= root.quit).grid(row=30,column=3)
 
+# Start the Tkinter event loop
 root.mainloop()
-
-
-
-
